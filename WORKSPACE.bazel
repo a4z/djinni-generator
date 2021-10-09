@@ -28,9 +28,13 @@ scala_config()
 load("@io_bazel_rules_scala//scala:scala.bzl", "scala_repositories")
 scala_repositories()
 
-# load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies", "rules_proto_toolchains")
-# rules_proto_dependencies()
-# rules_proto_toolchains()
+# Proto: https://github.com/bazelbuild/rules_scala/issues/1254
+# Declares @com_google_protobuf//:protoc pointing to released binary
+# This should stop building protoc during bazel build
+# See https://github.com/bazelbuild/rules_proto/pull/36
+load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies", "rules_proto_toolchains")
+rules_proto_dependencies()
+rules_proto_toolchains()
 
 load("@io_bazel_rules_scala//scala:toolchains.bzl", "scala_register_toolchains")
 scala_register_toolchains()
