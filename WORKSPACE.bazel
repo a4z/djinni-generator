@@ -1,15 +1,14 @@
+workspace(name = "djinni")
+
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
+skylib_version = "1.0.3"
 http_archive(
     name = "bazel_skylib",
-    urls = [
-        "https://github.com/bazelbuild/bazel-skylib/releases/download/1.1.1/bazel-skylib-1.1.1.tar.gz",
-        "https://mirror.bazel.build/github.com/bazelbuild/bazel-skylib/releases/download/1.1.1/bazel-skylib-1.1.1.tar.gz",
-    ],
-    sha256 = "c6966ec828da198c5d9adbaa94c05e3a1c7f21bd012a0b29ba8ddbccb2c93b0d",
+    sha256 = "1c531376ac7e5a180e0237938a2536de0c54d93f5c278634818e0efc952dd56c",
+    type = "tar.gz",
+    url = "https://mirror.bazel.build/github.com/bazelbuild/bazel-skylib/releases/download/{}/bazel-skylib-{}.tar.gz".format(skylib_version, skylib_version),
 )
-load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
-bazel_skylib_workspace()
 
 rules_scala_version = "e7a948ad1948058a7a5ddfbd9d1629d6db839933"
 http_archive(
@@ -29,6 +28,10 @@ scala_config()
 load("@io_bazel_rules_scala//scala:scala.bzl", "scala_repositories")
 scala_repositories()
 
+load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies", "rules_proto_toolchains")
+rules_proto_dependencies()
+rules_proto_toolchains()
+
 load("@io_bazel_rules_scala//scala:toolchains.bzl", "scala_register_toolchains")
 scala_register_toolchains()
 
@@ -37,23 +40,20 @@ load("@io_bazel_rules_scala//testing:scalatest.bzl", "scalatest_repositories", "
 scalatest_repositories()
 scalatest_toolchain()
 
-# Get Stuff from maven
+
 RULES_JVM_EXTERNAL_TAG = "4.0"
 RULES_JVM_EXTERNAL_SHA = "31701ad93dbfe544d597dbe62c9a1fdd76d81d8a9150c2bf1ecf928ecdf97169"
-
 http_archive(
     name = "rules_jvm_external",
     strip_prefix = "rules_jvm_external-%s" % RULES_JVM_EXTERNAL_TAG,
     sha256 = RULES_JVM_EXTERNAL_SHA,
     url = "https://github.com/bazelbuild/rules_jvm_external/archive/%s.zip" % RULES_JVM_EXTERNAL_TAG,
 )
-
 load("@rules_jvm_external//:defs.bzl", "maven_install")
-
 maven_install(
     artifacts = [
-        "commons-io:commons-io:2.8.0",
-        "com.github.scopt:scopt_2.12:3.7.1",
+        "commons-io:commons-io:2.11.0",
+        "com.github.scopt:scopt_2.12:4.0.1",
         "org.scala-lang.modules:scala-parser-combinators_2.12:2.1.0",
         "org.yaml:snakeyaml:1.26",
     ],
