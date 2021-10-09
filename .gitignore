@@ -19,7 +19,4 @@ project/metals.sbt
 ztest/
 .bsp/
 # bazel stuff
-bazel-bin
-bazel-djinni-generator
-bazel-out
-bazel-testlogs
+/bazel-*
