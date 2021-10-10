@@ -771,7 +771,7 @@ object Main {
     } else {
       None
     }
-    val idl : scala.collection.immutable.Seq[djinni.ast.TypeDecl]  =
+    val idl: scala.collection.immutable.Seq[djinni.ast.TypeDecl] =
       try {
         Parser(idlIncludePaths).parseFile(idlFile, inFileListWriter).toSeq
       } catch {

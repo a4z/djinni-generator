@@ -350,15 +350,14 @@ case class Parser(includePaths: List[String]) {
       val params = properties
         .get("params")
         .fold(Seq[TypeParam]())(
-          _.asInstanceOf[Seq[String]].collect {
-            case s: String =>
-              TypeParam(
-                Ident(
-                  s.asInstanceOf[String],
-                  fileStack.top,
-                  Loc(fileStack.top, 1, 1)
-                )
+          _.asInstanceOf[Seq[String]].collect { case s: String =>
+            TypeParam(
+              Ident(
+                s.asInstanceOf[String],
+                fileStack.top,
+                Loc(fileStack.top, 1, 1)
               )
+            )
           }
         )
 
