@@ -1,7 +1,9 @@
 package djinni
 
-import org.scalatest.FunSpec
-import org.scalatest.Matchers.{be, convertToAnyShouldWrapper, equal, noException}
+import org.scalatest._
+import matchers.should.Matchers._
+import org.scalatest.funspec._
+import scala.language.postfixOps
 
 import scala.io.Source
 import scala.sys.process._
@@ -9,11 +11,8 @@ import scala.sys.process._
 import scala.reflect.io.Directory
 import java.io.File
 
-
-/**
-  * Base class for integration tests, providing a few handy helper functions
-  */
-class IntegrationTest extends FunSpec {
+// Base class for integration tests, providing a few handy helper functions
+class IntegrationTest extends AnyFunSpec {
   final val CPP = "cpp"
   final val CPP_HEADERS = "cpp-headers"
   final val JAVA = "java"
@@ -58,10 +57,11 @@ class IntegrationTest extends FunSpec {
   type CppCli = List[String]
   def CppCli(params: String*) = List(params: _*)
 
-  /**
-    * Executes the djinni generator with the given parameters
-    * @param parameters parameters that should be passed to the process
-    * @return command-line output of the executed djinni-cli
+  /** Executes the djinni generator with the given parameters
+    * @param parameters
+    *   parameters that should be passed to the process
+    * @return
+    *   command-line output of the executed djinni-cli
     */
   def djinni(parameters: String): String = {
     if (new java.io.File("target/bin/djinni").isFile) {
@@ -76,26 +76,48 @@ class IntegrationTest extends FunSpec {
     }
   }
 
-  /**
-    * Generates the command line parameters to pass to the djinni generator.
+  /** Generates the command line parameters to pass to the djinni generator.
     *
-    * @param idl filename of the djinni-file (without file extension). The file must be located in the
-    *            `resources`-folder of the integration-tests (`src/it/resources`)
-    * @param baseOutputPath The root folder for the outputs to be generated.
-    * @param cpp Whether to generate C++ output. Default: true.
-    * @param java Whether to generate Java output. Default: true.
-    * @param objc Whether to generate Objective C output. Default: true.
-    * @param python Whether to generate Python output. Default: true.
-    * @param cWrapper Whether to generate Python output. Default: true.
-    * @param cppCLI Whether to generate Python output. Default: true.
-    * @param useNNHeader Whether to use the nn.hpp header for non-null pointers. Default: false.
+    * @param idl
+    *   filename of the djinni-file (without file extension). The file must be
+    *   located in the `resources`-folder of the integration-tests
+    *   (`src/it/resources`)
+    * @param baseOutputPath
+    *   The root folder for the outputs to be generated.
+    * @param cpp
+    *   Whether to generate C++ output. Default: true.
+    * @param java
+    *   Whether to generate Java output. Default: true.
+    * @param objc
+    *   Whether to generate Objective C output. Default: true.
+    * @param python
+    *   Whether to generate Python output. Default: true.
+    * @param cWrapper
+    *   Whether to generate Python output. Default: true.
+    * @param cppCLI
+    *   Whether to generate Python output. Default: true.
+    * @param useNNHeader
+    *   Whether to use the nn.hpp header for non-null pointers. Default: false.
+    * @param cppJsonSerialization
+    *   Specify JSON serializer library for c++ output. Default: None
     *
-    * @return command line params to pass to the djinni generator.
+    * @return
+    *   command line params to pass to the djinni generator.
     */
-  def djinniParams(idl: String, baseOutputPath: String = "src/it/resources/result", // this should never change, see removeTestOutputDirectory, and it is also used on other locations
-                   cpp: Boolean = true, java: Boolean = true, objc: Boolean = true,
-                   python: Boolean = true, cWrapper: Boolean = true, cppCLI: Boolean = true,
-                   useNNHeader: Boolean = false, cppOmitDefaultRecordCtor: Boolean = false): String = {
+  def djinniParams(
+      idl: String,
+      baseOutputPath: String =
+        "src/it/resources/result", // this should never change, see removeTestOutputDirectory, and it is also used on other locations
+      cpp: Boolean = true,
+      java: Boolean = true,
+      objc: Boolean = true,
+      python: Boolean = true,
+      cWrapper: Boolean = true,
+      cppCLI: Boolean = true,
+      useNNHeader: Boolean = false,
+      cppOmitDefaultRecordCtor: Boolean = false,
+      cppJsonSerialization: Option[String] = None
+  ): String = {
     var cmd = s"--idl src/it/resources/$idl.djinni"
     if (cpp) {
       cmd += s" --cpp-out $baseOutputPath/$idl/$CPP"
@@ -137,49 +159,70 @@ class IntegrationTest extends FunSpec {
     if (cppOmitDefaultRecordCtor) {
       cmd += " --cpp-omit-default-record-constructor true"
     }
+    if (cppJsonSerialization.isDefined) {
+      cmd += s" --cpp-json-serialization ${cppJsonSerialization.get}"
+    }
     cmd += s" --list-out-files $baseOutputPath/$idl/generated-files.txt"
     return cmd
   }
 
   def pwd = System.getProperty("user.dir")
 
-  /**
-    * Executes the djinni generator with the given idl-file as input.
+  /** Executes the djinni generator with the given idl-file as input.
     *
-    * @param idl filename of the djinni-file (without file extension). The file must be located in the
-    *            `resources`-folder of the integration-tests (`src/it/resources`)
-    * @return command-line output of the executed djinni-cli
+    * @param idl
+    *   filename of the djinni-file (without file extension). The file must be
+    *   located in the `resources`-folder of the integration-tests
+    *   (`src/it/resources`)
+    * @return
+    *   command-line output of the executed djinni-cli
     */
   def djinniGenerate(idl: String): String = {
     return djinni(djinniParams(idl))
   }
 
-  /**
-    * Asserts that all expected files have been created & have the expected content. It basically compares the contents
-    * of the generator output in `resources/result/$lang` with the expectations defined in `resources/expected/$lang`.
-    * @param idl filename of the input-idl (without file extension)
-    * @param lang language to assert for (e.g. `cpp`, `cpp-headers`, `java`, `jni`, `jni-headers`, `objc`, `objc-headers`, `objcpp`, `objcpp-headers`)
-    * @param filenames list of expected filenames that should have been generated for the given language
+  /** Asserts that all expected files have been created & have the expected
+    * content. It basically compares the contents of the generator output in
+    * `resources/result/$lang` with the expectations defined in
+    * `resources/expected/$lang`.
+    * @param idl
+    *   filename of the input-idl (without file extension)
+    * @param lang
+    *   language to assert for (e.g. `cpp`, `cpp-headers`, `java`, `jni`,
+    *   `jni-headers`, `objc`, `objc-headers`, `objcpp`, `objcpp-headers`)
+    * @param filenames
+    *   list of expected filenames that should have been generated for the given
+    *   language
     */
-  def assertFileContentEquals(idl: String, lang: String, filenames: List[String]): Unit = {
-    for(filename <- filenames) {
-      val resultFile = Source.fromFile(s"src/it/resources/result/$idl/$lang/$filename")
-      val expectationFile = Source.fromFile(s"src/it/resources/expected/$idl/$lang/$filename")
-      resultFile.mkString should equal (expectationFile.mkString)
+  def assertFileContentEquals(
+      idl: String,
+      lang: String,
+      filenames: List[String]
+  ): Unit = {
+    for (filename <- filenames) {
+      val resultFile =
+        Source.fromFile(s"src/it/resources/result/$idl/$lang/$filename")
+      val expectationFile =
+        Source.fromFile(s"src/it/resources/expected/$idl/$lang/$filename")
+      resultFile.mkString should equal(expectationFile.mkString)
       resultFile.close()
       expectationFile.close()
     }
   }
 
-  def removeTestOutputDirectory(baseOutputPath: String = "src/it/resources/result") {
+  def removeTestOutputDirectory(
+      baseOutputPath: String = "src/it/resources/result"
+  ) {
     val directory = new Directory(new File(baseOutputPath))
     if (directory.deleteRecursively()) {
-      System.console.printf("[info] Clean up old generated test output/files.\n")
+      System.console.printf(
+        "[info] Clean up old generated test output/files.\n"
+      )
     }
   }
 
   def assertFileExists(filename: String): Unit = {
-      noException should be thrownBy Source.fromFile(filename)
+    noException should be thrownBy Source.fromFile(filename)
   }
 
 }
