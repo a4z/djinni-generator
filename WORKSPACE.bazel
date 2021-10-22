@@ -1,29 +1,12 @@
 workspace(name = "djinni")
 
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("//:archives.bzl", "get_archives")
+get_archives()
 
-skylib_version = "1.0.3"
-http_archive(
-    name = "bazel_skylib",
-    sha256 = "1c531376ac7e5a180e0237938a2536de0c54d93f5c278634818e0efc952dd56c",
-    type = "tar.gz",
-    url = "https://mirror.bazel.build/github.com/bazelbuild/bazel-skylib/releases/download/{}/bazel-skylib-{}.tar.gz".format(skylib_version, skylib_version),
-)
 
-rules_scala_version = "e7a948ad1948058a7a5ddfbd9d1629d6db839933"
-http_archive(
-    name = "io_bazel_rules_scala",
-    sha256 = "76e1abb8a54f61ada974e6e9af689c59fd9f0518b49be6be7a631ce9fa45f236",
-    strip_prefix = "rules_scala-%s" % rules_scala_version,
-    type = "zip",
-    url = "https://github.com/bazelbuild/rules_scala/archive/%s.zip" % rules_scala_version,
-)
 
-# Stores Scala version and other configuration
-# 2.12 is a default version, other versions can be use by passing them explicitly:
-# scala_config(scala_version = "2.11.12")
 load("@io_bazel_rules_scala//:scala_config.bzl", "scala_config")
-scala_config()
+scala_config(scala_version = "2.13.6")
 
 load("@io_bazel_rules_scala//scala:scala.bzl", "scala_repositories")
 scala_repositories()
@@ -44,22 +27,13 @@ load("@io_bazel_rules_scala//testing:scalatest.bzl", "scalatest_repositories", "
 scalatest_repositories()
 scalatest_toolchain()
 
-
-RULES_JVM_EXTERNAL_TAG = "4.0"
-RULES_JVM_EXTERNAL_SHA = "31701ad93dbfe544d597dbe62c9a1fdd76d81d8a9150c2bf1ecf928ecdf97169"
-http_archive(
-    name = "rules_jvm_external",
-    strip_prefix = "rules_jvm_external-%s" % RULES_JVM_EXTERNAL_TAG,
-    sha256 = RULES_JVM_EXTERNAL_SHA,
-    url = "https://github.com/bazelbuild/rules_jvm_external/archive/%s.zip" % RULES_JVM_EXTERNAL_TAG,
-)
 load("@rules_jvm_external//:defs.bzl", "maven_install")
 maven_install(
     artifacts = [
         "commons-io:commons-io:2.11.0",
-        "com.github.scopt:scopt_2.12:4.0.1",
-        "org.scala-lang.modules:scala-parser-combinators_2.12:2.1.0",
-        "org.yaml:snakeyaml:1.26",
+        "com.github.scopt:scopt_2.13:4.0.1",
+        "org.scala-lang.modules:scala-parser-combinators_2.13:2.1.0",
+        "org.yaml:snakeyaml:1.29",
     ],
     repositories = [
         "https://maven.google.com",
