@@ -4,18 +4,22 @@ scala_binary(
     name = "djinni",
     srcs = glob(["src/main/scala/djinni/**/*.scala"]),
     main_class = "djinni.Main",
+    resource_strip_prefix = "src/main/resources/",
+    resources = [
+        "src/main/resources/extension/json/nlohmann/json+extension.hpp",
+    ],
+    visibility = ["//visibility:public"],
     deps = [
         "@maven//:com_github_scopt_scopt_2_13",
         "@maven//:commons_io_commons_io",
         "@maven//:org_scala_lang_modules_scala_parser_combinators_2_13",
         "@maven//:org_yaml_snakeyaml",
     ],
-    visibility = ["//visibility:public"]
 )
 
 scala_test(
     name = "test",
     srcs = glob(["src/it/scala/djinni/**/*.scala"]),
-    deps = [":djinni"],
     data = glob(["src/it/resources/**"]),
+    deps = [":djinni"],
 )
