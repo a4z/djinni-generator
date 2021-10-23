@@ -57,7 +57,7 @@ jobs:
       - name: Restoring file permissions of artifact
         run: chmod u+x target/bin/djinni
       - name: Running integration-tests
-        run: sbt it:test
+        run: sbt IntegrationTest/test
   bazel:
     runs-on: ubuntu-latest
     steps:
@@ -71,5 +71,5 @@ jobs:
     - name: "Run bazel build"
       run: bazel build //...
     - name: Run bazel test
-      run: sbt IntegrationTest/test
+      run: bazel test //...
 
