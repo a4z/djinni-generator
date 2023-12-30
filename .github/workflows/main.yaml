@@ -100,7 +100,7 @@ jobs:
           name: djinni-generator.bat
           path: target/bin
       - name: Execute djinni-generator.bat
-        run: target/bin/djinni.bat --version
+        run: sh target/bin/djinni.bat --version
       - name: Generate sha256sum
         run: sha256sum target/bin/djinni.bat > target/bin/djinni.bat.sha256
       - uses: "marvinpinto/action-automatic-releases@latest"
