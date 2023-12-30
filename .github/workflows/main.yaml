@@ -83,7 +83,7 @@ jobs:
   publishPreRelease:
     runs-on: ubuntu-latest
     needs: [it, buildWindows]
-    # if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/download-artifact@v4
         with:
