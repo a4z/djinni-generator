@@ -223,8 +223,6 @@ class GeneratorIntegrationTest extends IntegrationTest with GivenWhenThen {
       )
     }
 
-
-
     it("should be able to generate C++ records without a default constructor") {
       val idlFile = "my_record_omit_default_ctor"
       When(
@@ -253,8 +251,6 @@ class GeneratorIntegrationTest extends IntegrationTest with GivenWhenThen {
         s => Paths.get(s)
       )
     }
-
-
 
     it("should be able to only generate Java output") {
       val outputPath = "src/it/resources/result/only_java_out"
@@ -330,8 +326,6 @@ class GeneratorIntegrationTest extends IntegrationTest with GivenWhenThen {
       assertFileContentEquals(idlFile, OBJCPP_HEADERS, objcppHeaderFilenames)
     }
 
-
-
     it(
       "should be able to include Java generic type information for extern types"
     ) {
@@ -349,9 +343,6 @@ class GeneratorIntegrationTest extends IntegrationTest with GivenWhenThen {
         cpp = false,
         objc = false,
         java = true,
-
-
-
         cppOmitDefaultRecordCtor = true
       )
 
@@ -491,9 +482,6 @@ class GeneratorIntegrationTest extends IntegrationTest with GivenWhenThen {
         cpp = true,
         objc = false,
         java = false,
-
-
-
         cppJsonSerialization = Some("nlohmann_json")
       )
       djinni(cmd)
@@ -565,9 +553,6 @@ class GeneratorIntegrationTest extends IntegrationTest with GivenWhenThen {
       cpp = true,
       objc = false,
       java = false,
-
-
-
       cppOmitDefaultRecordCtor = true
     )
 
@@ -595,9 +580,6 @@ class GeneratorIntegrationTest extends IntegrationTest with GivenWhenThen {
       cpp = false,
       objc = false,
       java = true,
-
-
-
       cppOmitDefaultRecordCtor = true
     )
 
@@ -629,9 +611,6 @@ class GeneratorIntegrationTest extends IntegrationTest with GivenWhenThen {
       cpp = false,
       objc = true,
       java = false,
-
-
-
       cppOmitDefaultRecordCtor = true
     )
 
@@ -678,9 +657,6 @@ class GeneratorIntegrationTest extends IntegrationTest with GivenWhenThen {
       cpp = true,
       objc = false,
       java = true,
-
-
-
       cppOmitDefaultRecordCtor = false
     )
 

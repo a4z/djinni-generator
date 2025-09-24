@@ -24,7 +24,6 @@ class IntegrationTest extends AnyFunSpec {
   final val OBJCPP = "objcpp"
   final val OBJCPP_HEADERS = "objcpp-headers"
 
-
   type Cpp = List[String]
   def Cpp(params: String*) = List(params: _*)
   type CppHeaders = List[String]
@@ -43,7 +42,6 @@ class IntegrationTest extends AnyFunSpec {
   def ObjCpp(params: String*) = List(params: _*)
   type ObjCppHeaders = List[String]
   def ObjCppHeaders(params: String*) = List(params: _*)
-
 
   /** Executes the djinni generator with the given parameters
     * @param parameters
@@ -71,7 +69,7 @@ class IntegrationTest extends AnyFunSpec {
     *   Whether to generate Java output. Default: true.
     * @param objc
     *   Whether to generate Objective C output. Default: true.
-
+    *
     * @param useNNHeader
     *   Whether to use the nn.hpp header for non-null pointers. Default: false.
     * @param cppJsonSerialization
@@ -87,7 +85,6 @@ class IntegrationTest extends AnyFunSpec {
       cpp: Boolean = true,
       java: Boolean = true,
       objc: Boolean = true,
-
       useNNHeader: Boolean = false,
       cppOmitDefaultRecordCtor: Boolean = false,
       cppJsonSerialization: Option[String] = None
