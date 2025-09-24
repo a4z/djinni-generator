@@ -52,7 +52,20 @@ class IntegrationTest extends AnyFunSpec {
   def djinni(parameters: String): String = {
     val binExt =
       if (System.getProperty("os.name").startsWith("Windows")) ".bat" else ""
-    toUnixLineSeparator(s"target/bin/djinni${binExt} " + parameters !!)
+
+    if (new java.io.File("target/bin/djinni").isFile) {
+      // assume this is a sbt it:test.
+      // this expect that sbt assembly has been executed, and the executable is there
+      toUnixLineSeparator("target/bin/djinni" + binExt + " " + parameters !!)
+    } else if (new java.io.File("bazel-bin/djinni").isFile) {
+      // bazel build, or anything else. Expect to find djinni in bazel-bin directory
+      toUnixLineSeparator("bazel-bin/djinni" + binExt + " " + parameters !!)
+    } else if (new java.io.File("djinni").isFile) {
+      // fallback: djinni in current directory
+      toUnixLineSeparator("djinni" + binExt + " " + parameters !!)
+    } else {
+      fail("djinni executable not found")
+    }
   }
 
   /** Generates the command line parameters to pass to the djinni generator.
@@ -202,9 +215,12 @@ class IntegrationTest extends AnyFunSpec {
   ) {
     val directory = new Directory(new File(baseOutputPath))
     if (directory.deleteRecursively()) {
-      System.console.printf(
-        "[info] Clean up old generated test output/files.\n"
-      )
+      Option(System.console) match {
+        case Some(console) => console.printf(
+          "[info] Clean up old generated test output/files.\n"
+        )
+        case None => println("[info] Clean up old generated test output/files.")
+      }
     }
   }
 
