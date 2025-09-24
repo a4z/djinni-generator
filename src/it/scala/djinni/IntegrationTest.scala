@@ -52,15 +52,16 @@ class IntegrationTest extends AnyFunSpec {
   def djinni(parameters: String): String = {
     val binExt =
       if (System.getProperty("os.name").startsWith("Windows")) ".bat" else ""
+    val sbtBinary = "target/bin/djinni" + binExt
 
-    if (new java.io.File("target/bin/djinni").isFile) {
+    if (new java.io.File(sbtBinary).isFile) {
       // assume this is a sbt it:test.
       // this expect that sbt assembly has been executed, and the executable is there
-      toUnixLineSeparator("target/bin/djinni" + binExt + " " + parameters !!)
+      toUnixLineSeparator(sbtBinary + " " + parameters !!)
     } else if (new java.io.File("bazel-bin/djinni").isFile) {
       // bazel build, or anything else. Expect to find djinni in bazel-bin directory
       toUnixLineSeparator("bazel-bin/djinni" + binExt + " " + parameters !!)
-    } else if (new java.io.File("djinni").isFile) {
+    } else if (new java.io.File("djinni" + binExt).isFile) {
       // fallback: djinni in current directory
       toUnixLineSeparator("djinni" + binExt + " " + parameters !!)
     } else {
