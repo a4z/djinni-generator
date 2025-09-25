@@ -18,4 +18,5 @@ scala_test(
     srcs = glob(["src/it/scala/djinni/**/*.scala"]),
     data = glob(["src/it/resources/**"]),
     deps = [":djinni"],
+    timeout="short",
 )
