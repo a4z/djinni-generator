@@ -5,6 +5,7 @@ scala_binary(
     srcs = glob(["src/main/scala/**/*.scala"]),
     main_class = "djinni.Main",
     resources = glob(["src/main/resources/**"]),
+    visibility = ["//visibility:public"],
     deps = [
         "@maven//:com_github_scopt_scopt_2_12",
         "@maven//:commons_io_commons_io",
